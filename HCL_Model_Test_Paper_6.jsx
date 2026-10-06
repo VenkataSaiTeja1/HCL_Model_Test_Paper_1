@@ -5,11 +5,10 @@
  * B.Tech students (CSE, CSM, CAI, CSD, IT, ECE, EEE).
  *
  * Tabs
- *   1. Overview      – test pattern and timing, this paper's coding problem, instructions, progress
- *   2. Question Bank – Paper 1: 30 MCQs (A1 Quant 10 · A2 Reasoning 8 · A3 Computer Fundamentals 12)
+  *   1. Question Bank – Paper 1: 30 MCQs (A1 Quant 10 · A2 Reasoning 8 · A3 Computer Fundamentals 12)
  *                      + the Section B coding problem, with section chips, filters, search, sort
- *   3. Mock Test     – timed test: full Section A (30 Qs · 60 min) or one section
- *   4. Coding Round  – Section B: Transaction Audit Windows (Prefix sums + hashing), Java + Python solutions, extra tests
+ *   2. Mock Test     – timed test: full Section A (30 Qs · 60 min) or one section
+ *   3. Coding Round  – Section B: Transaction Audit Windows (Prefix sums + hashing), Java + Python solutions, extra tests
  *
  * Content
  *   • Questions, options, answers and working are exactly those of the Word paper
@@ -81,21 +80,6 @@ const DIFF_META = {
   Hard: { fg: "#991B1B", bg: "#FEE2E2" },
 };
 
-// Test pattern used by every model paper (same as Papers 1–5).
-const PATTERN = [
-  { code: "A1", section: "Quantitative Aptitude", content: "Percentages, profit & loss, time & work, speed & distance, ratios, averages, interest, probability, number system", questions: 10, marks: 10, time: "20 min", tab: "bank", cat: "quant" },
-  { code: "A2", section: "Logical Reasoning", content: "Series, coding–decoding, blood relations, directions, seating, syllogisms, data sufficiency", questions: 8, marks: 8, time: "15 min", tab: "bank", cat: "reasoning" },
-  { code: "A3", section: "Computer Fundamentals", content: "Operating systems, computer networks, DBMS & SQL, data structures, OOP, output prediction", questions: 12, marks: 12, time: "25 min", tab: "bank", cat: "technical" },
-  { code: "B", section: "Coding", content: "One medium problem: arrays, strings, hashing, stacks, binary search, BFS or DP", questions: 1, marks: 20, time: "45 min", tab: "coding", cat: "coding" },
-];
-const INSTRUCTIONS = [
-  "Each MCQ carries 1 mark. There is no negative marking, so attempt every question.",
-  "Choose exactly one option (A, B, C or D) per question. Use rough sheets only for working.",
-  "Calculators, phones and notes are not allowed. Practise mental arithmetic for Section A1.",
-  "Section B may be written in C, C++, Java or Python. Read input from standard input and print output exactly in the format shown.",
-  "Code is judged on correctness for all test cases (12 marks), efficiency within the given constraints (5 marks) and readability (3 marks).",
-  "Move on if a question takes more than 2 minutes; return to it at the end.",
-];
 const TEST_SCOPES = [
   { id: "full", name: "Full paper (Section A)", cats: ["quant", "reasoning", "technical"], minutes: 60 },
   { id: "quant", name: "A1 · Quant", cats: ["quant"], minutes: 20 },
@@ -235,74 +219,6 @@ function CodingCard({ q, solved, onToggle }) {
 }
 
 // ─── TABS ───────────────────────────────────────────────────────────────────
-function Overview({ stats, paperStats, onNavigate }) {
-  return (
-    <div className="stack">
-      <section className="card">
-        <h3>Test pattern and timing</h3>
-        <p>Each model paper is a 1 hour 45 minute written test: 30 MCQs in Section A and one medium coding problem in Section B. The remaining 45 minutes of the 2½-hour assessment are for the AI-enabled V-Boat communication test, practised separately.</p>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Section</th><th>Content</th><th>Questions</th><th>Marks</th><th>Suggested time</th></tr></thead>
-            <tbody>
-              {PATTERN.map((r) => (
-                <tr key={r.code}>
-                  <td>
-                    <button className="link navlink" onClick={() => onNavigate && onNavigate(r.tab, r.cat)} title={`Jump to ${r.section}`}>
-                      {r.code} — {r.section} <span aria-hidden="true">→</span>
-                    </button>
-                  </td>
-                  <td>{r.content}</td><td>{r.questions}</td><td>{r.marks}</td><td>{r.time}</td>
-                </tr>
-              ))}
-              <tr><td><b>Total</b></td><td /><td><b>31</b></td><td><b>50</b></td><td><b>1 h 45 min</b></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p className="muted small" style={{ marginTop: 8 }}>The pattern mirrors the aptitude + technical MCQ + coding structure HCL has used in recent campus drives; the exact section split varies by drive and job role, so treat the timings as a practice standard rather than an official specification.</p>
-      </section>
-
-      <section className="grid4">
-        {CATS.map((c) => (
-          <div key={c.id} className="statcard" style={{ borderTopColor: c.color }}>
-            <div className="stat-icon" style={{ color: c.color }}>{c.icon}</div>
-            <div className="stat-name">{c.name}</div>
-            <div className="stat-num">{stats[c.id].done}<span>/{COUNT[c.id]} {c.id === "coding" ? "solved" : "attempted"}</span></div>
-            <div className="bar"><div style={{ width: `${(stats[c.id].done / COUNT[c.id]) * 100}%`, background: c.color }} /></div>
-            <div className="muted small">{c.id === "coding" ? "Marked as solved" : `${stats[c.id].correct} correct`}</div>
-          </div>
-        ))}
-      </section>
-
-      <section className="card">
-        <h3>{SINGLE ? "This paper" : "Paper index"}</h3>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Paper</th><th>Section B coding problem</th><th>DSA pattern tested</th><th>Progress</th><th /></tr></thead>
-            <tbody>
-              {PAPERS.map((p) => {
-                const c = CODING_ITEMS.find((q) => q.paper === p);
-                const s = paperStats[p];
-                return (
-                  <tr key={p}>
-                    <td><b>Paper {p}</b></td><td>{c.q}</td><td>{c.pattern}</td>
-                    <td>{s.done}/30 MCQs · {s.correct} correct</td>
-                    <td><button className="link" onClick={() => onNavigate("bank", "all", p)}>Open →</button></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="card">
-        <h3>Instructions for students</h3>
-        <ul>{INSTRUCTIONS.map((t) => <li key={t}>{t}</li>)}</ul>
-      </section>
-    </div>
-  );
-}
 
 /** Labelled <select> used by the Question Bank filters. */
 function Sel({ label, value, set, options }) {
@@ -479,21 +395,14 @@ function Coding({ progress, onSolved }) {
 }
 
 // ─── ROOT ───────────────────────────────────────────────────────────────────
-const TABS = [["overview", "Overview"], ["bank", "Question Bank"], ["mock", "Mock Test"], ["coding", "Coding Round"]];
+const TABS = [["bank", "Question Bank"], ["mock", "Mock Test"], ["coding", "Coding Round"]];
 
 export default function HCLModelTestPaper1() {
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("bank");
   const [bankCat, setBankCat] = useState("all");
   const [bankPaper, setBankPaper] = useState("all");
   const [progress, setProgress] = useState(loadProgress);
   useEffect(() => saveProgress(progress), [progress]);
-
-  const onNavigate = (targetTab, targetCat = "all", targetPaper = "all") => {
-    setTab(targetTab);
-    setBankCat(targetCat || "all");
-    setBankPaper(String(targetPaper));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   const onAnswer = (q, choice) => setProgress((p) => (p[q.id] ? p : { ...p, [q.id]: { choice, correct: choice === q.ans } }));
   const onSolved = (q) => setProgress((p) => { const n = { ...p }; if (n[q.id]) delete n[q.id]; else n[q.id] = { solved: true, correct: true }; return n; });
@@ -502,10 +411,6 @@ export default function HCLModelTestPaper1() {
   const stats = useMemo(() => Object.fromEntries(CATS.map((c) => {
     const ids = BANK.filter((q) => q.cat === c.id).map((q) => q.id);
     return [c.id, { done: ids.filter((id) => progress[id]).length, correct: ids.filter((id) => progress[id]?.correct).length }];
-  })), [progress]);
-  const paperStats = useMemo(() => Object.fromEntries(PAPERS.map((p) => {
-    const ids = BANK.filter((q) => q.paper === p && q.type !== "coding").map((q) => q.id);
-    return [p, { done: ids.filter((id) => progress[id]).length, correct: ids.filter((id) => progress[id]?.correct).length }];
   })), [progress]);
   const totalDone = Object.values(stats).reduce((a, s) => a + s.done, 0);
 
@@ -525,7 +430,6 @@ export default function HCLModelTestPaper1() {
         </nav>
       </header>
       <main className="main">
-        {tab === "overview" && <Overview stats={stats} paperStats={paperStats} onNavigate={onNavigate} />}
         {tab === "bank" && <Bank progress={progress} cat={bankCat} setCat={setBankCat} paper={bankPaper} setPaper={setBankPaper} onAnswer={onAnswer} onSolved={onSolved} onReset={onReset} />}
         {tab === "mock" && <MockTest />}
         {tab === "coding" && <Coding progress={progress} onSolved={onSolved} />}
